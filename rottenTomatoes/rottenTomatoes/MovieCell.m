@@ -7,6 +7,8 @@
 //
 
 #import "MovieCell.h"
+#import "DetailsViewController.h"
+#import "MoviesViewController.h"
 
 @implementation MovieCell
 
@@ -20,6 +22,8 @@
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
-}
+    
+    
+    }
 
 @end

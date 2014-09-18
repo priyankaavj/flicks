@@ -9,6 +9,7 @@
 #import "MoviesViewController.h"
 #import "MovieCell.h"
 #import "UIImageView+AFNetworking.h"
+#import "DetailsViewController.h"
 
 @interface MoviesViewController ()
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -22,6 +23,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+        self.title = @"Rotten Tomatoes";
     }
     return self;
 }
@@ -69,5 +71,16 @@
     
     return cell;
 
+}
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    DetailsViewController *detailsViewController = [[DetailsViewController alloc]init];
+    NSDictionary *movieData = self.movies[indexPath.row];
+    detailsViewController.movieData = movieData;
+
+    [self.navigationController pushViewController:detailsViewController animated:YES];
+    
 }
 @end
