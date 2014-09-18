@@ -10,11 +10,14 @@
 #import "MovieCell.h"
 #import "UIImageView+AFNetworking.h"
 #import "DetailsViewController.h"
+#import "MBProgressHUD.h"
 
 @interface MoviesViewController ()
+@property MBProgressHUD *hud;
 @property (weak, nonatomic) IBOutlet UILabel *errorLabel;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray *movies;
+-(void)makeNetworkCall;
 @end
 
 @implementation MoviesViewController
@@ -33,16 +36,26 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.hud.mode = MBProgressHUDModeAnnularDeterminate;
+    self.hud.labelText = @"Loading";
+    self.hud.progress = YES;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.rowHeight = 125;
+
     
     [self.tableView registerNib:[UINib nibWithNibName:@"MovieCell" bundle:nil] forCellReuseIdentifier:@"MovieCell"];
+    [self makeNetworkCall];
     
+}
+
+- (void)makeNetworkCall
+{
     NSString *url = @"http://api.rottentomatoes.com/api/public/v1.0/lists/movies/box_office.json?apikey=dagqdghwaq3e3mxyrp7kmmj5&limit=20&country=us";
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        [self.hud hide:YES];
         if(data != nil) {
             self.errorLabel.hidden = YES;
             NSDictionary *object = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
@@ -55,7 +68,7 @@
         }
         
     }];
-    
+
 }
 
 - (void)didReceiveMemoryWarning
