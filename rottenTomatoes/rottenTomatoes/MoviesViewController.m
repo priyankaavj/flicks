@@ -17,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *errorLabel;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray *movies;
+@property UIRefreshControl *refreshControl;
 -(void)makeNetworkCall;
 @end
 
@@ -36,6 +37,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self pullToRefresh];
     self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.hud.mode = MBProgressHUDModeAnnularDeterminate;
     self.hud.labelText = @"Loading";
@@ -56,6 +58,7 @@
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
         [self.hud hide:YES];
+        [self.refreshControl endRefreshing];
         if(data != nil) {
             self.errorLabel.hidden = YES;
             NSDictionary *object = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
@@ -104,5 +107,10 @@
 
     [self.navigationController pushViewController:detailsViewController animated:YES];
     
+}
+- (void) pullToRefresh {
+    self.refreshControl = [[UIRefreshControl alloc]init];
+    [self.refreshControl addTarget:self action:@selector(makeNetworkCall) forControlEvents:UIControlEventValueChanged];
+    [self.tableView addSubview:self.refreshControl];
 }
 @end
