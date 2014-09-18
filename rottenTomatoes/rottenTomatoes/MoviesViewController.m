@@ -12,6 +12,7 @@
 #import "DetailsViewController.h"
 
 @interface MoviesViewController ()
+@property (weak, nonatomic) IBOutlet UILabel *errorLabel;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray *movies;
 @end
@@ -25,6 +26,7 @@
         // Custom initialization
         self.title = @"Rotten Tomatoes";
     }
+    self.errorLabel.hidden = YES;
     return self;
 }
 
@@ -41,10 +43,17 @@
     NSString *url = @"http://api.rottentomatoes.com/api/public/v1.0/lists/movies/box_office.json?apikey=dagqdghwaq3e3mxyrp7kmmj5&limit=20&country=us";
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
-        NSDictionary *object = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        self.movies = object[@"movies"];
-        [self.tableView reloadData];
-        NSLog(@"mivies %@", self.movies);
+        if(data != nil) {
+            self.errorLabel.hidden = YES;
+            NSDictionary *object = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            self.movies = object[@"movies"];
+            [self.tableView reloadData];
+        }
+        else {
+            self.errorLabel.hidden = NO;
+            self.tableView.hidden = YES;
+        }
+        
     }];
     
 }
